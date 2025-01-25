@@ -20,7 +20,8 @@ export class Game extends Scene
 
         this.map = new Map(this, 'lake', 'pixil-frame-0(2)', 'ground', 'collision','detail',32);  
 
-        this.machine = this.add.image(850,55,'machine');
+        this.machine = this.physics.add.image(890,55,'machine');
+        this.machine.body.setImmovable(true);
 
         //this.land = this.physics.add.sprite(0,100,'pixel').setOrigin(0).setScale(1000,20).setTint(0x964B00);
         //this.land.setRotation(1);//=45;
@@ -58,10 +59,14 @@ export class Game extends Scene
         this.bb.body.setImmovable(true);
         this.bbseek = false;
 
+        this.lid = this.physics.add.image(1000,70,'pixel').setScale(9000,1).setVisible(false);
+        this.lid.body.setImmovable(true);
+
         this.setCollisions();
         
         //this.bbc.add(this.bb);
 
+        this.store = false;
 
         this.makeTrash();
 
@@ -70,13 +75,22 @@ export class Game extends Scene
 
         this.trashWiggle=false;
 
+        this.makeStore();
+
+        this.storeMove = true;
+
+        this.darkness = this.add.image(0,1000,'pixel').setTint(0x000000).setScale(11000,2000).setOrigin(0);
+        this.darkness.alpha = 0.2;
+
+        this.darkness2 = this.add.image(0,3000,'pixel').setTint(0x000000).setScale(11000,2000).setOrigin(0);
+        this.darkness2.alpha = 0.4;
     }
 
     makeUI() {
 
-        this.metal = 0;
-        this.glass = 0;
-        this.plastic = 0;
+        this.metal = 2;
+        this.glass = 10;
+        this.plastic = 10;
 
         this.ui = this.add.container(700,0);
         this.ui1 = this.add.text(0,0,"Metal:",{fontSize: '20px', color: '#777', fontFace:"Comic Sans", fontStyle:"bold" });
@@ -98,6 +112,51 @@ export class Game extends Scene
         this.ui.setScrollFactor(0, 0);
     }
 
+    makeStore() {
+        this.storeC = this.add.container(1000,100).setDepth(4);
+
+        this.storeback = this.add.image(0,0,'pixel').setScale(600,400).setOrigin(0);
+        this.storeC.add(this.storeback);
+        this.storeC.setVisible(false);
+
+        this.storeIndex = 0;
+        this.storeOptions = [
+            {name: "Increased air tank capacity", metal: 4, glass:0, plastic:1, image:'tank', purchased: 0},
+            {name: "Fins (+speed)", metal: 0, glass:0, plastic:3, image:'fins', purchased: 0},
+        ];
+
+        this.storeSelector = this.add.image(45,45,'pixel').setScale(560,60).setTint(0xff0000).setOrigin(0).setDepth(1);
+        this.storeC.add(this.storeSelector);
+
+        for (let i=0; i<this.storeOptions.length;i++){
+            this.back = this.add.image(50,50+i*100,'pixel').setScale(550,50).setTint(0x0000ff).setOrigin(0).setDepth(2);
+            this.words = this.add.text(50,50+i*100,this.storeOptions[i].name,{fontSize: '20px', color: '#777', fontFace:"Comic Sans", fontStyle:"bold" }).setOrigin(0).setDepth(2);
+
+            this.storeC.add(this.back);
+            this.storeC.add(this.words);
+        }
+
+        this.back = this.add.image(50,50+this.storeOptions.length*100,'pixel').setScale(550,50).setTint(0x0000ff).setOrigin(0).setDepth(2);
+        this.words = this.add.text(50,50+this.storeOptions.length*100,'EXIT',{fontSize: '20px', color: '#777', fontFace:"Comic Sans", fontStyle:"bold" }).setOrigin(0).setDepth(2);
+
+        this.storeC.add(this.back);
+        this.storeC.add(this.words);
+
+        
+    }
+
+    showStore() {
+        this.storeIndex = 0;
+
+        this.storeC.setVisible(true);
+        this.store = true;
+    }
+
+    hideStore() {
+        this.storeC.setVisible(false);
+        this.store = false;
+    }
+
     makeAir() {
         this.air = 100;
         this.airMax = 100;
@@ -106,8 +165,11 @@ export class Game extends Scene
         this.showAir.setScale(100,400);
         this.showAir.setScrollFactor(0, 0);
 
-        this.airWord = this.add.text(1360,275,"AIR",{fontSize: '40px', color: '#777', fontFace:"Comic Sans", fontStyle:"bold" });
-        this.airWord.setScrollFactor(0, 0);
+        //this.airWord = this.add.text(1360,275,"AIR",{fontSize: '40px', color: '#777', fontFace:"Comic Sans", fontStyle:"bold" });
+        //this.airWord.setScrollFactor(0, 0);
+
+        this.guage = this.add.image(1385,350,'gauge').setScale(0.55);
+        this.guage.setScrollFactor(0,0);
 
         this.useAir();
 
@@ -139,13 +201,13 @@ export class Game extends Scene
         this.trash1.moving = false;
 
         this.trash1.setDepth(3);
-        this.trash1.metal=1;
+        this.trash1.metal=2;
         this.trash1.glass=0;
         this.trash1.plastic=0;
         this.trash1.body.setImmovable(true);
         this.trash.add(this.trash1);
 
-        this.trash1 = this.physics.add.sprite(1500,500,'bottle',10).setScale(.5);
+        this.trash1 = this.physics.add.sprite(1500,400,'bottle').setScale(.5);
         this.trash1.moving = false;
 
         this.trash1.setDepth(3);
@@ -156,18 +218,18 @@ export class Game extends Scene
         this.trash.add(this.trash1);
 
 
-        this.trash1 = this.physics.add.sprite(1800,700,'lamp',10).setScale(.25);
+        this.trash1 = this.physics.add.sprite(1800,700,'lamp').setScale(.25);
         this.trash1.moving = false;
 
         this.trash1.setDepth(3);
-        this.trash1.metal=1;
+        this.trash1.metal=2;
         this.trash1.glass=1;
         this.trash1.plastic=0;
         this.trash1.body.setImmovable(true);
         this.trash.add(this.trash1);
 
 
-        this.trash1 = this.physics.add.sprite(2100,900,'jars',10).setScale(.25);
+        this.trash1 = this.physics.add.sprite(2100,900,'jars').setScale(.25);
         this.trash1.moving = false;
 
         this.trash1.setDepth(3);
@@ -184,7 +246,8 @@ export class Game extends Scene
 
     setCollisions() {
         this.physics.add.collider(this.player, this.map.collisionLayer, this.freeze, null, this);
-        //this.physics.add.collider(this.player, this.bb, this.freeze2, null, this);
+        this.physics.add.collider(this.player, this.lid, this.freeze, null, this);
+        this.physics.add.collider(this.player, this.machine, this.showStore, null, this);
     }
 
     cashin() {
@@ -217,42 +280,74 @@ export class Game extends Scene
     bubble() {
 
         //console.log(this.bubbles.getLength());
+        console.log(this.airMax);
 
-        this.player.body.setVelocity(0);
+        // If the store is open do this
 
-        //console.log(this.selected);
-        if(this.selected.x > 0 && this.cleaning == false && this.trashWiggle) {
-            console.log('building big bubble');
-            
-            this.cleaning = true;
-            this.bb.x = this.player.x;
-            this.bb.y = this.player.y+40;
-            this.bb.setVisible(true);
-            
-            this.universal_tween(this.bb,this.selected.x,this.selected.y, 1000,0,false,this.setSeek);
-            this.air -=10;
+        if(this.store) {
+            if(this.storeIndex == this.storeOptions.length) {
+                this.hideStore();
+            }
+            else {
+                // Purchase?
+                let item = this.storeOptions[this.storeIndex];
+                if(item.purchased == 0 && item.metal<=this.metal && item.glass <= this.glass && item.plastic <= this.plastic) {
+                    console.log('ok!');
+                    item.purchased = 1;
+                    this.metal -= item.metal;
+                    this.glass -= item.glass;
+                    this.plastic -= item.plastic;
+
+                    if(this.storeIndex == 0) {
+                        this.airMax = 200;
+                    }
+                    else if(this.storeIndex == 1) {
+                        this.player.velocity = 500;
+                    }
+                }
+                else {
+                    console.log('no sale');
+                }
+            }
         }
         else {
-            //console.log('empty');
-        
+
+
+            this.player.body.setVelocity(0);
+
             //console.log(this.selected);
-        
-            
-
-            if(this.player.frame.texture.key == 'swimmer') {
-                this.bubble = this.physics.add.sprite(this.player.x+50,this.player.y+40,'bubble').setScale(.2);
-                this.universal_tween(this.bubble,this.bubble.x+200,this.bubble.y,500,null,null,null);            
-            } else {
-                //console.log('swimmer2');
-                this.bubble = this.physics.add.sprite(this.player.x+20,this.player.y+40,'bubble').setScale(.2);
-                this.universal_tween(this.bubble,this.bubble.x-200,this.bubble.y,500,null,null,null);
+            if(this.selected.x > 0 && this.cleaning == false && this.trashWiggle) {
+                console.log('building big bubble');
+                
+                this.cleaning = true;
+                this.bb.x = this.player.x;
+                this.bb.y = this.player.y+40;
+                this.bb.setVisible(true);
+                
+                this.universal_tween(this.bb,this.selected.x,this.selected.y, 1000,0,false,this.setSeek);
+                this.air -=10;
             }
-            this.air--;
-            this.bubble.setVelocity(0,-50);
-            this.bubbles.add(this.bubble);
+            else {
+                //console.log('empty');
+            
+                //console.log(this.selected);
+            
+                
 
+                if(this.player.frame.texture.key == 'swimmer') {
+                    this.bubble = this.physics.add.sprite(this.player.x+50,this.player.y+40,'bubble').setScale(.2);
+                    this.universal_tween(this.bubble,this.bubble.x+200,this.bubble.y,500,null,null,null);            
+                } else {
+                    //console.log('swimmer2');
+                    this.bubble = this.physics.add.sprite(this.player.x+20,this.player.y+40,'bubble').setScale(.2);
+                    this.universal_tween(this.bubble,this.bubble.x-200,this.bubble.y,500,null,null,null);
+                }
+                this.air--;
+                this.bubble.setVelocity(0,-50);
+                this.bubbles.add(this.bubble);
+
+            }
         }
-        
             
         
         //this.bubble.setTint(0xffffff);
@@ -353,7 +448,34 @@ export class Game extends Scene
 
     update() {
 
-        this.player.update(this.cursors);
+        if(this.store) {
+
+            if(this.storeMove) {
+                this.storeMove = false;
+
+                this.time.addEvent({
+                    delay: 150,
+                    callback: ()=>{                        
+                        this.storeMove = true;
+                    },
+                    loop: false
+        
+                });
+
+                if (this.cursors.down.isDown) {
+                    this.storeIndex++;
+                    if(this.storeIndex == this.storeOptions.length+1) this.storeIndex = 0;
+                } else if (this.cursors.up.isDown) {
+                    //this.player.body.setVelocityY(speed);
+                    this.storeIndex--;
+                    if(this.storeIndex == -1) this.storeIndex = this.storeOptions.length;
+                }
+                this.storeSelector.y = 45 + (100*this.storeIndex);
+            }
+        }
+        else {
+            this.player.update(this.cursors);
+        }
         let scene = this;
 
         this.bubbles.getChildren().forEach(function (bubble) {
@@ -380,8 +502,10 @@ export class Game extends Scene
         if(this.player.y < 70 && this.air < this.airMax) {
             this.air++;
         }
-        if(this.air < 1)
+        if(this.air < 1) {
+            //this.events.off();
             this.scene.start('GameOver');
+        }
 
         /*if(this.bbc.length == 2 && this.bbc.y < 100) {
             if(Phaser.Math.Distance.Between(this.bbc.x, this.bbc.y,this.player.x,this.player.y)<95 ) {

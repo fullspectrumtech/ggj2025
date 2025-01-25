@@ -21,7 +21,10 @@ export class GameOver extends Scene
 
         this.input.once('pointerdown', () => {
 
-            this.scene.start('MainMenu');
+            //this.registry.destroy();
+            //this.events.off();
+            //this.scene.start('MainMenu');
+            location.reload(); 
 
         });
     }

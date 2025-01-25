@@ -53,6 +53,19 @@ export class Preloader extends Scene
         this.load.image('jars','jars.png');
         this.load.image('lamp','lamp.png');
 
+        this.load.image('metal','metal.png');
+        this.load.image('glass','glass.png');
+        this.load.image('plastic','plastic.png');
+
+        this.load.image('gauge','gauge.png');
+
+        this.load.image('tank1','tank1.png');
+        this.load.image('tank2','tank2.png');
+        this.load.image('fins1','fins1.png');
+        this.load.image('fins2','fins2.png');
+        this.load.image('light1','light1.png');
+        this.load.image('light2','light2.png');
+
         //this.load.image('tileset12345','maps/tileset12345.png');
         this.load.image('pixil-frame-0(2)','maps/pixil-frame-0(2).png');
         
