@@ -57,7 +57,8 @@ export class Preloader extends Scene
         this.load.image('pixil-frame-0(2)','maps/pixil-frame-0(2).png');
         
         //this.load.tilemapTiledJSON('lake','maps/lake.json');
-        this.load.tilemapTiledJSON('lake','maps/boooooooooooooooooring.json');
+        //this.load.tilemapTiledJSON('lake','maps/boooooooooooooooooring.json');
+        this.load.tilemapTiledJSON('lake','maps/MAP.json');
 
 
     }

@@ -42,7 +42,7 @@ export class Game extends Scene
             active: true,            
         });
 
-        this.setCollisions();
+        
 
         this.makeUI();
 
@@ -54,15 +54,21 @@ export class Game extends Scene
         this.bbc.moving = false;
             
         this.bb = this.physics.add.sprite(0,0,'bubble').setVisible(false);
+        this.bb.setScale(0.5);
         this.bb.body.setImmovable(true);
+        this.bbseek = false;
+
+        this.setCollisions();
         
-        this.bbc.add(this.bb);
+        //this.bbc.add(this.bb);
 
 
         this.makeTrash();
 
         this.makeAir();
         //this.air = 100;
+
+        this.trashWiggle=false;
 
     }
 
@@ -178,6 +184,7 @@ export class Game extends Scene
 
     setCollisions() {
         this.physics.add.collider(this.player, this.map.collisionLayer, this.freeze, null, this);
+        //this.physics.add.collider(this.player, this.bb, this.freeze2, null, this);
     }
 
     cashin() {
@@ -187,15 +194,24 @@ export class Game extends Scene
         //this.trash1.setVisible(false);
         this.bb.setVisible(false);
 
-        this.metal += this.bbc.last.metal;
-        this.glass += this.bbc.last.glass;
-        this.plastic += this.bbc.last.plastic;
+        this.metal += this.selected.metal;
+        this.glass += this.selected.glass;
+        this.plastic += this.selected.plastic;
 
-        console.log(this.bbc.last);
+        //console.log(this.bbc.last);
         //this.bbc.last.destroy();
-        this.bbc.removeAt(1, true);
-        this.bbc.moving = false;
+        //this.bbc.removeAt(1, true);
+        //this.bbc.moving = false;
 
+        this.bbseek = false;
+        this.cleaning = false;
+        this.selected.destroy();
+        this.selected = {};
+
+    }
+
+    setSeek() {
+        this.bbseek = true;
     }
 
     bubble() {
@@ -205,14 +221,15 @@ export class Game extends Scene
         this.player.body.setVelocity(0);
 
         //console.log(this.selected);
-        if(this.selected.x > 0 && this.cleaning == false) {
+        if(this.selected.x > 0 && this.cleaning == false && this.trashWiggle) {
             console.log('building big bubble');
             
             this.cleaning = true;
-            this.bbc.x = this.player.x;
-            this.bbc.y = this.player.y+40;
+            this.bb.x = this.player.x;
+            this.bb.y = this.player.y+40;
             this.bb.setVisible(true);
-            this.universal_tween(this.bbc,this.selected.x,this.selected.y, 1000,0,false,this.float);
+            
+            this.universal_tween(this.bb,this.selected.x,this.selected.y, 1000,0,false,this.setSeek);
             this.air -=10;
         }
         else {
@@ -240,7 +257,7 @@ export class Game extends Scene
         
         //this.bubble.setTint(0xffffff);
     }
-
+/*
     float() {
         //console.log('float');
         //console.log(this.selected);
@@ -266,9 +283,14 @@ export class Game extends Scene
             this.universal_tween(this.bbc,900,this.bbc.y,1000+((this.bbc.x-900)/1000),false,false,this.cashin);
         }
     }
-
+*/
     freeze() {
         this.player.body.setVelocity(0);
+    }
+    freeze2() {
+        this.bb.body.setVelocity(0);
+        this.player.body.setVelocity(0);
+        console.log('freeze2');
     }
 
     universal_tween(targets, x, y, duration, repeat, yoyo, onComplete) {
@@ -287,9 +309,12 @@ export class Game extends Scene
 
     breathe(targets) {
 
-        if(targets.moving == false) {
+        console.log(targets.moving);
 
-            targets.moving = true;
+        if(this.trashWiggle == false) {
+
+            //targets.moving = true;
+            this.trashWiggle = true;
             this.selected = targets;
 
             this.tween_move = this.tweens.add({
@@ -314,8 +339,10 @@ export class Game extends Scene
             this.time.addEvent({
                 delay: 500,
                 callback: ()=>{                        
-                    targets.moving = false;
-                    this.selected = {};
+                    this.trashWiggle = false;
+                    if(this.cleaning == false) {
+                        this.selected = {};
+                    }
                 },
                 loop: false
     
@@ -337,11 +364,15 @@ export class Game extends Scene
             //
         });
 
+        
         this.trash.getChildren().forEach(function (trash) {
             if(Phaser.Math.Distance.Between(trash.x, trash.y,scene.player.x,scene.player.y)<95) {
                 //console.log('close');
-                if(trash.y> 150) 
-                    scene.breathe(trash);
+                if(trash.y> 150) {
+                    if(scene.bbseek == false) {
+                       scene.breathe(trash);
+                    }
+                }
             }
         });
 
@@ -352,15 +383,34 @@ export class Game extends Scene
         if(this.air < 1)
             this.scene.start('GameOver');
 
-        if(this.bbc.length == 2 && this.bbc.y < 100) {
+        /*if(this.bbc.length == 2 && this.bbc.y < 100) {
             if(Phaser.Math.Distance.Between(this.bbc.x, this.bbc.y,this.player.x,this.player.y)<95 ) {
                 this.doit();
             }
-        }
+        }*/
 
         this.ui2.text = this.metal;
         this.ui4.text = this.plastic;
         this.ui6.text = this.glass;
+
+        
+
+        if(this.bbseek) {
+
+            this.selected.body.setVelocity(0);
+            this.bb.body.setVelocity(0);
+
+            if(Phaser.Math.Distance.Between(this.bb.x+20, this.bb.y+20,this.player.x+15,this.player.y+20)>30) {
+                if(this.bbseek) {
+                    this.physics.moveTo(this.bb, this.player.x+15, this.player.y+20,300);
+                    this.physics.moveTo(this.selected, this.bb.x+10, this.bb.y+10,300);
+                }
+            }
+
+            if(Phaser.Math.Distance.Between(this.machine.x, this.machine.y,this.bb.x,this.bb.y)<150) {
+                this.cashin();
+            }
+        }
 
         //console.log(this.bbc.length);
         /*
