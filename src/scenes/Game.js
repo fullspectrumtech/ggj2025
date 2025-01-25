@@ -44,7 +44,7 @@ export class Game extends Scene
 
         this.setCollisions();
 
-        this.makeTrash();
+        
 
         this.ui = this.add.container(700,0);
         this.ui1 = this.add.text(0,0,"Metal:",{fontSize: '20px', color: '#777', fontFace:"Comic Sans", fontStyle:"bold" });
@@ -64,34 +64,113 @@ export class Game extends Scene
         this.ui.add(this.ui6);
 
         this.ui.setScrollFactor(0, 0);
+        this.selected = {};
+        this.cleaning = false;
+
+        this.bbc = this.add.container(this.player.x, this.player.y+40);
+            
+        this.bb = this.physics.add.sprite(0,0,'bubble').setVisible(false);
+        this.bb.body.setImmovable(true);
+        
+        this.bbc.add(this.bb);
+
+        this.makeTrash();
 
     }
 
     makeTrash() {
+        this.trash = this.add.group({
+            classType: Phaser.GameObjects.Sprite,
+            active: true,            
+        });
+
         this.trash1 = this.physics.add.sprite(1200,300,'trash',10).setScale(2);
+        this.trash1.moving = false;
+        this.trash1.setDepth(3);
+        this.trash1.body.setImmovable(true);
+        
+
+        //this.physics.add.collider(this.machine, this.trash1, this.cashin(1), null, this);
+
+        this.trash.add(this.trash1);
+        //console.log('trash building??');
     }
 
     setCollisions() {
         this.physics.add.collider(this.player, this.map.collisionLayer, this.freeze, null, this);
     }
 
+    cashin(total) {
+        console.log('cashin');
+        console.log(total);
+        this.trash1.setVelocity(0);
+        this.trash1.setVisible(false);
+        this.bb.setVisible(false);
+    }
+
     bubble() {
 
         //console.log(this.bubbles.getLength());
-        
+
         this.player.body.setVelocity(0);
 
-        if(this.player.frame.texture.key == 'swimmer') {
-            this.bubble = this.physics.add.sprite(this.player.x+50,this.player.y+40,'bubble').setScale(.2);
-            this.universal_tween(this.bubble,this.bubble.x+200,this.bubble.y,500,null,null,null);            
-        } else {
-            //console.log('swimmer2');
-            this.bubble = this.physics.add.sprite(this.player.x+20,this.player.y+40,'bubble').setScale(.2);
-            this.universal_tween(this.bubble,this.bubble.x-200,this.bubble.y,500,null,null,null);
+        console.log(this.selected);
+        if(this.selected.x > 0 && this.cleaning == false) {
+            console.log('building big bubble');
+            
+            this.cleaning = true;
+            this.bbc.x = this.player.x;
+            this.bbc.y = this.player.y+40;
+            this.bb.setVisible(true);
+            this.universal_tween(this.bbc,this.selected.x,this.selected.y, 1000,0,false,this.float);
+            
         }
-        this.bubble.setVelocity(0,-50);
-        this.bubbles.add(this.bubble);
+        else {
+            //console.log('empty');
+        
+            //console.log(this.selected);
+        
+            
+
+            if(this.player.frame.texture.key == 'swimmer') {
+                this.bubble = this.physics.add.sprite(this.player.x+50,this.player.y+40,'bubble').setScale(.2);
+                this.universal_tween(this.bubble,this.bubble.x+200,this.bubble.y,500,null,null,null);            
+            } else {
+                //console.log('swimmer2');
+                this.bubble = this.physics.add.sprite(this.player.x+20,this.player.y+40,'bubble').setScale(.2);
+                this.universal_tween(this.bubble,this.bubble.x-200,this.bubble.y,500,null,null,null);
+            }
+            this.bubble.setVelocity(0,-50);
+            this.bubbles.add(this.bubble);
+
+        }
+        
+            
+        
         //this.bubble.setTint(0xffffff);
+    }
+
+    float() {
+        //console.log('float');
+        //console.log(this.selected);
+        this.bbc.add(this.selected);
+        this.selected.x=0;
+        this.selected.y=0;
+        this.universal_tween(this.bbc,this.bbc.x,80,this.bbc.y*10,0,false,this.done);
+        this.cleaning = false;
+    }
+
+    done() {
+        console.log('done');
+       // this.universal_tween(this.bbc,this.bbc.x,this.bbc.y+20,250,0,false,null);
+        this.physics.add.collider(this.player, this.bb, this.doit(1), null, this);
+
+    }
+
+    doit(which) {
+        console.log('doit');
+        //this.bbc.setVelocityX(-50);
+        this.universal_tween(this.bbc,900,this.bbc.y,4000,false,false,this.cashin(which));
     }
 
     freeze() {
@@ -112,6 +191,45 @@ export class Game extends Scene
         });
     }
 
+    breathe(targets) {
+
+        if(targets.moving == false) {
+
+            targets.moving = true;
+            this.selected = targets;
+
+            this.tween_move = this.tweens.add({
+                targets,
+                paused: false,
+                scale: 2.5,
+                ease: 'Linear',
+                duration: 250,
+                repeat: 0,
+                loop: true,
+                yoyo: true,    
+                
+                /*
+                scaleY: 1.85, //2.1,
+                ease: 'Linear',
+                duration: 50,
+                repeat:15,
+                loop: true,*/
+                // bind to this for convenience
+            });
+
+            this.time.addEvent({
+                delay: 500,
+                callback: ()=>{                        
+                    targets.moving = false;
+                    this.selected = {};
+                },
+                loop: false
+    
+            });
+        }
+        
+    }
+
     update() {
 
         this.player.update(this.cursors);
@@ -120,7 +238,17 @@ export class Game extends Scene
         this.bubbles.getChildren().forEach(function (bubble) {
             if(bubble.y<-50) {
                 scene.bubbles.remove(bubble);
-            }       
+            }
+            
+            //
+        });
+
+        this.trash.getChildren().forEach(function (trash) {
+            if(Phaser.Math.Distance.Between(trash.x, trash.y,scene.player.x,scene.player.y)<95) {
+                //console.log('close');
+                if(trash.y> 150) 
+                    scene.breathe(trash);
+            }
         });
 
         /*
