@@ -3,26 +3,28 @@ import { Game } from './scenes/Game';
 import { GameOver } from './scenes/GameOver';
 import { MainMenu } from './scenes/MainMenu';
 import { Preloader } from './scenes/Preloader';
+//import { Map } from './classes/Map';
+//import { Player } from './classes/Player';
 
 //  Find out more information about the Game Config at:
 //  https://newdocs.phaser.io/docs/3.70.0/Phaser.Types.Core.GameConfig
 const config = {
     type: Phaser.AUTO,
-    width: 1024,
-    height: 768,
+    width: window.innerWidth,
+    height: window.innerHeight,
+    scale: {
+      mode: Phaser.Scale.RESIZE
+    },
     parent: 'game-container',
     backgroundColor: '#028af8',
-    scale: {
-        mode: Phaser.Scale.FIT,
-        autoCenter: Phaser.Scale.CENTER_BOTH
-    },
+    
     physics: {
         default: "arcade",
         arcade: {
           gravity: { y: 0 }, // Game objects will be pulled down along the y-axis
           // The number 1500 is arbitrary. The higher, the stronger the pull.
           // A negative value will pull game objects up along the y-axis
-          debug: true, // Whether physics engine should run in debug mode
+          debug: false, // Whether physics engine should run in debug mode
         },
       },
     scene: [
@@ -30,7 +32,8 @@ const config = {
         Preloader,
         MainMenu,
         Game,
-        GameOver
+        GameOver,
+        
     ]
 };
 
