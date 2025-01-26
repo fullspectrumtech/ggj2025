@@ -442,22 +442,30 @@ export class Game extends Scene
 
     popIt() {
         //console.log('popped!');
+        if(this.bb.visible) {
+            this.bbseek = false;
+            this.cleaning = false;
+            //this.selected.destroy();
+            try {
+                this.selected.body.setVelocity(0);
+            } catch(error) {
+                console.log('boom2');
+            }
+            this.universal_tween(this.selected,this.selected.x,this.selected.y+75,1000,0,false,null);
+            //this.selected.y += 75;
+            
+            this.time.addEvent({
+                delay: 1000,
+                callback: ()=>{                        
+                    this.selected = {};
+                },
+                loop: false
+    
+            });
+            this.bb.setVisible(false);
 
-        this.bbseek = false;
-        this.cleaning = false;
-        //this.selected.destroy();
-        try {
-            this.selected.body.setVelocity(0);
-        } catch(error) {
-            console.log('boom2');
+            this.pop.play();
         }
-        this.universal_tween(this.selected,this.selected.x,this.selected.y+75,1000,0,false,null);
-        //this.selected.y += 75;
-        
-        //this.selected = {};
-        this.bb.setVisible(false);
-
-        this.pop.play();
     }
 
     addAir() {
@@ -733,7 +741,7 @@ export class Game extends Scene
 
         //console.log(this.player.x+" "+this.player.y);
 
-        
+        console.log(this.bbseek);
 
         if(this.store) {
 
@@ -773,17 +781,21 @@ export class Game extends Scene
             //
         });
 
-        
+        let found = false;
         this.trash.getChildren().forEach(function (trash) {
             if(Phaser.Math.Distance.Between(trash.x, trash.y,scene.player.x,scene.player.y)<95) {
                 //console.log('close');
                 if(trash.y> 150) {
                     if(scene.bbseek == false) {
                        scene.breathe(trash);
+                       found=true;
                     }
                 }
             }
         });
+
+        if(found == false && this.cleaning == false)
+            this.bbseek = false;
 
         this.showAir.setScale(100,(this.air/this.airMax)*400);
         if(this.player.y < 70 && this.air < this.airMax) {
@@ -806,7 +818,7 @@ export class Game extends Scene
 
         
 
-        if(this.bbseek) {
+        if(this.bbseek && this.cleaning) {
 
             this.selected.body.setVelocity(0);
             this.bb.body.setVelocity(0);
