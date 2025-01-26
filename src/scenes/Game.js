@@ -18,6 +18,21 @@ export class Game extends Scene
 
         this.ocean = this.add.image(0,100,'pixel').setOrigin(0).setScale(10656,10656).setTint(0x70d5ff);
 
+        this.air1 = this.physics.add.image(530,700,'pixel').setOrigin(0).setScale(600,300).setTint(0xffffff);
+        this.air1.body.setImmovable(true);
+
+        this.air2 = this.physics.add.image(1400,3400,'pixel').setOrigin(0).setScale(350,250).setTint(0xffffff);
+        this.air2.body.setImmovable(true);
+
+        this.air3 = this.physics.add.image(300,8450,'pixel').setOrigin(0).setScale(600,450).setTint(0xffffff);
+        this.air3.body.setImmovable(true);
+
+        this.air4 = this.physics.add.image(6000,6900,'pixel').setOrigin(0).setScale(500,250).setTint(0xffffff);
+        this.air4.body.setImmovable(true);
+
+        this.air5 = this.physics.add.image(1500,5100,'pixel').setOrigin(0).setScale(600,200).setTint(0xffffff);
+        this.air5.body.setImmovable(true);
+
         this.map = new Map(this, 'lake', 'pixil-frame-0(2)', 'ground', 'collision','detail',32);  
 
         this.machine = this.physics.add.image(890,55,'machine');
@@ -59,7 +74,7 @@ export class Game extends Scene
         this.bb.body.setImmovable(true);
         this.bbseek = false;
 
-        this.lid = this.physics.add.image(1000,70,'pixel').setScale(9000,1).setVisible(false);
+        this.lid = this.physics.add.image(1000,70,'pixel').setScale(9900,1).setVisible(false);
         this.lid.body.setImmovable(true);
 
         this.side = this.physics.add.image(10656,0,'pixel').setScale(1,9000).setVisible(false);
@@ -70,6 +85,24 @@ export class Game extends Scene
         this.fish = this.physics.add.sprite(10000,3500,'YellowFish').setScale(40);         
         this.fish.body.setImmovable(true);
         this.fish.flipX = true;
+        
+
+        this.fishes = this.add.group({
+            classType: Phaser.GameObjects.Sprite,
+            active: true,            
+        });
+
+        this.fish1 = this.physics.add.sprite(1400,200,'redfish');
+        this.fish1.body.setImmovable(true);
+        this.flipFishRight(this.fish1,4000);
+        this.universal_tween2(this.fish1,this.fish1.x+400,4000,-1,true,null);
+        this.fishes.add(this.fish1);
+
+        this.fish2 = this.physics.add.sprite(1600,400,'redfish');
+        this.fish2.body.setImmovable(true);
+        this.flipFishRight(this.fish2,2000);
+        this.universal_tween2(this.fish2,this.fish2.x+600,2000,-1,true,null);
+        this.fishes.add(this.fish2);
 
         this.setCollisions();
         
@@ -120,14 +153,16 @@ export class Game extends Scene
         this.alarming = false;
         //this.music.play();
         //this.sound.stopAll();
+
+        this.airDelay = false;
         
     }
 
     makeUI() {
 
-        this.metal = 2;
-        this.glass = 10;
-        this.plastic = 10;
+        this.metal = 0;
+        this.glass = 0;
+        this.plastic = 0;
 
         this.ui = this.add.container(700,0);
         this.ui1 = this.add.text(0,0,"Metal:",{fontSize: '20px', color: '#777', fontFace:"Comic Sans", fontStyle:"bold" });
@@ -188,6 +223,34 @@ export class Game extends Scene
         this.storeC.add(this.words);
 
         
+    }
+
+    flipFishRight(fish, delay2) {
+        
+        fish.flipX = false;
+
+        this.time.addEvent({
+            delay: delay2,
+            callback: ()=>{                        
+                this.flipFishLeft(fish,delay2);
+            },
+            loop: false
+
+        });
+    }
+
+    flipFishLeft(fish, delay2) {
+        fish.flipX = true;
+        //console.log('left '+delay);
+
+        this.time.addEvent({
+            delay: delay2,
+            callback: ()=>{                        
+                this.flipFishRight(fish,delay2);
+            },
+            loop: false
+
+        });
     }
 
     showStore() {
@@ -283,39 +346,47 @@ export class Game extends Scene
         });
 
         this.trashes = [
-            {x: 1200, y:300, ref: 'can', scale:2}
+            {x: 1200, y:300, ref: 'can', scale:1, metal:1, glass:0, plastic:0},
+            {x: 1500, y:400, ref: 'bottle', scale:0.25, metal:0, glass:0, plastic:1},
+            {x: 1800, y:700, ref: 'lamp', scale:0.15, metal:0, glass:1, plastic:0},
+            {x: 2100, y:900, ref: 'jars', scale:0.15, metal:0, glass:1, plastic:0},
+
+            {x: 3231, y:1306, ref: 'metal2', scale:0.15, metal:3, glass:0, plastic:0},
+            {x: 2416, y:1658, ref: 'plastic2', scale:0.5, metal:0, glass:0, plastic:2},
+            {x: 1054, y:2810, ref: 'tv', scale:0.35, metal:1, glass:1, plastic:1},
+            {x: 2018, y:3130, ref: 'can', scale:1, metal:1, glass:0, plastic:0},
+            {x: 3421, y:3514, ref: 'bottle', scale:0.25, metal:0, glass:0, plastic:1},
+            {x: 2235, y:4378, ref: 'lamp', scale:0.15, metal:0, glass:1, plastic:0},
+            {x: 2077, y:4378, ref: 'jars', scale:0.15, metal:0, glass:1, plastic:0},
+            {x: 1656, y:3962, ref: 'metal2', scale:0.15, metal:3, glass:0, plastic:0},
+            {x: 1533, y:7930, ref: 'plastic2', scale:0.5, metal:0, glass:0, plastic:2},
+            {x: 502, y:10202, ref: 'tv', scale:0.35, metal:1, glass:1, plastic:1},
+            {x: 3359, y:9690, ref: 'can', scale:1, metal:1, glass:0, plastic:0},
+            {x: 4943, y:10202, ref: 'piano', scale:0.25, metal:9, glass:9, plastic:9},
+            {x: 6694, y:9850, ref: 'bottle', scale:0.25, metal:0, glass:0, plastic:1},
+            {x: 7749, y:8121, ref: 'lamp', scale:0.15, metal:0, glass:1, plastic:0},
+            {x: 9420, y:6842, ref: 'metal2', scale:0.15, metal:3, glass:0, plastic:0},
+            {x: 8511, y:5338, ref: 'plastic2', scale:0.5, metal:0, glass:0, plastic:2},
+            {x: 9693, y:6426, ref: 'tv', scale:0.35, metal:1, glass:1, plastic:1},
+            
         ];
 
-        this.trash1 = this.physics.add.sprite(1200,300,'can').setScale(2);
-        this.trash1.moving = false;
+        for(let i=0;i<this.trashes.length;i++) {
+            //this.trash1 = this.physics.add.sprite(1200,300,'can').setScale(2);
+            this.trash1 = this.physics.add.sprite(this.trashes[i].x, this.trashes[i].y,this.trashes[i].ref).setScale(this.trashes[i].scale);
+            this.trash1.moving = false;
+    
+            this.trash1.setDepth(3);
+            this.trash1.metal=this.trashes[i].metal;
+            this.trash1.glass=this.trashes[i].glass;
+            this.trash1.plastic=this.trashes[i].plastic;
+            this.trash1.body.setImmovable(true);
+            this.trash.add(this.trash1);
+        }
 
-        this.trash1.setDepth(3);
-        this.trash1.metal=2;
-        this.trash1.glass=0;
-        this.trash1.plastic=0;
-        this.trash1.body.setImmovable(true);
-        this.trash.add(this.trash1);
-
-        this.trash1 = this.physics.add.sprite(1500,400,'bottle').setScale(.5);
-        this.trash1.moving = false;
-
-        this.trash1.setDepth(3);
-        this.trash1.metal=0;
-        this.trash1.glass=0;
-        this.trash1.plastic=1;
-        this.trash1.body.setImmovable(true);
-        this.trash.add(this.trash1);
-
-
-        this.trash1 = this.physics.add.sprite(1800,700,'lamp').setScale(.25);
-        this.trash1.moving = false;
-
-        this.trash1.setDepth(3);
-        this.trash1.metal=2;
-        this.trash1.glass=1;
-        this.trash1.plastic=0;
-        this.trash1.body.setImmovable(true);
-        this.trash.add(this.trash1);
+        
+/*
+       
 
 
         this.trash1 = this.physics.add.sprite(2100,900,'jars').setScale(.25);
@@ -328,7 +399,7 @@ export class Game extends Scene
         this.trash1.body.setImmovable(true);
         this.trash.add(this.trash1);
         
-
+*/
         
         //console.log('trash building??');
     }
@@ -338,8 +409,75 @@ export class Game extends Scene
         this.physics.add.collider(this.player, this.lid, this.freeze, null, this);
         this.physics.add.collider(this.player, this.side, this.freeze, null, this);
         this.physics.add.collider(this.player, this.fish, this.freeze, null, this);
+        this.physics.add.collider(this.player, this.air1, this.addAir, null, this);
+        this.physics.add.collider(this.player, this.air2, this.addAir, null, this);
+        this.physics.add.collider(this.player, this.air3, this.addAir, null, this);
+        this.physics.add.collider(this.player, this.air4, this.addAir, null, this);
+        this.physics.add.collider(this.player, this.air5, this.addAir, null, this);
         this.physics.add.collider(this.player, this.machine, this.showStore, null, this);
         this.physics.add.collider(this.player, this.treasure, this.youWin, null, this);
+        
+
+        this.physics.add.collider(this.bb, this.fishes, this.popIt, null, this);
+
+        this.physics.add.collider(this.fishes, this.bubbles, this.fishBubble,null,this);
+    }
+
+    fishBubble(fish,bubble) {
+        //console.log(fish.x);
+        //console.log(bubble.x);
+        /*if(fish.x < bubble.x) {
+            fish.x -= 10;
+        } else {
+            fish.x += 10;
+       
+            }*/
+
+        bubble.body.setVelocityY(-50);
+
+       if(fish.y > 100)
+        fish.y-=2;
+        
+    }
+
+    popIt() {
+        //console.log('popped!');
+
+        this.bbseek = false;
+        this.cleaning = false;
+        //this.selected.destroy();
+        try {
+            this.selected.body.setVelocity(0);
+        } catch(error) {
+            console.log('boom2');
+        }
+        this.universal_tween(this.selected,this.selected.x,this.selected.y+75,1000,0,false,null);
+        //this.selected.y += 75;
+        
+        //this.selected = {};
+        this.bb.setVisible(false);
+
+        this.pop.play();
+    }
+
+    addAir() {
+
+        if(this.airDelay == false) {
+            this.airDelay = true;
+            if(this.air <= this.airMax)
+                this.air += 10;
+
+            this.time.addEvent({
+                delay: 100,
+                callback: ()=>{                        
+                    this.airDelay = false;
+                },
+                loop: false
+    
+            });
+        }
+
+        
     }
 
     youWin() {
@@ -364,6 +502,7 @@ export class Game extends Scene
 
         this.bbseek = false;
         this.cleaning = false;
+        //this.selected.y -= 100;
         this.selected.destroy();
         this.selected = {};
 
@@ -389,7 +528,7 @@ export class Game extends Scene
     bubble() {
 
         //console.log(this.bubbles.getLength());
-        console.log(this.airMax);
+        //console.log(this.airMax);
 
         // If the store is open do this
 
@@ -434,8 +573,16 @@ export class Game extends Scene
 
             this.player.body.setVelocity(0);
 
+            let selectedX = 0;
+            try {
+                selectedX = this.selected.x;
+            }catch(error) {
+                console.log('boom');
+            }
+
             //console.log(this.selected);
-            if(this.selected.x > 0 && this.cleaning == false && this.trashWiggle) {
+            //if(this.selected.x > 0 && this.cleaning == false && this.trashWiggle) {
+            if(selectedX > 0 && this.cleaning == false && this.trashWiggle) {
                 //console.log('building big bubble');
 
                 //this.music = this.sound.add('pop', {loop: false, volume:0.5});
@@ -524,6 +671,20 @@ export class Game extends Scene
         });
     }
 
+    universal_tween2(targets, x, duration, repeat, yoyo, onComplete) {
+        this.tween_move = this.tweens.add({
+            targets,
+            paused: false,
+            x,
+            
+            ease: 'Linear',
+            duration,
+            repeat,
+            yoyo,            
+            onComplete: onComplete?.bind(this) // bind to this for convenience
+        });
+    }
+
     breathe(targets) {
 
         //console.log(targets.moving);
@@ -570,7 +731,9 @@ export class Game extends Scene
 
     update() {
 
-        console.log(this.player.x+" "+this.player.y);
+        //console.log(this.player.x+" "+this.player.y);
+
+        
 
         if(this.store) {
 
@@ -628,7 +791,7 @@ export class Game extends Scene
         }
         if(this.air < 1) {
             //this.events.off();
-            //this.scene.start('GameOver');
+            this.scene.start('GameOver');
         }
 
         /*if(this.bbc.length == 2 && this.bbc.y < 100) {
