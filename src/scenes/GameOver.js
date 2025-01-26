@@ -11,21 +11,18 @@ export class GameOver extends Scene
     {
         this.cameras.main.setBackgroundColor(0xff0000);
 
-        this.add.image(512, 384, 'background').setAlpha(0.5);
-
-        this.add.text(512, 384, 'Game Over', {
+        this.add.text(512, 384, 'Game Over\n (press Space to try again)', {
             fontFamily: 'Arial Black', fontSize: 64, color: '#ffffff',
             stroke: '#000000', strokeThickness: 8,
             align: 'center'
         }).setOrigin(0.5);
 
-        this.input.once('pointerdown', () => {
+        this.spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.spaceBar.on('down', this.go, this);
+        
+    }
 
-            //this.registry.destroy();
-            //this.events.off();
-            //this.scene.start('MainMenu');
-            location.reload(); 
-
-        });
+    go() {
+        location.reload(); 
     }
 }

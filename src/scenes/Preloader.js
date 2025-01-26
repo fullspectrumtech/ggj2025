@@ -10,7 +10,7 @@ export class Preloader extends Scene
     init ()
     {
         //  We loaded this image in our Boot Scene, so we can display it here
-        this.add.image(512, 384, 'background');
+        //this.add.image(512, 384, 'background');
         //this.add.image(512, 384, 'background');
 
         //  A simple progress bar. This is the outline of the bar.
@@ -42,10 +42,12 @@ export class Preloader extends Scene
             frameWidth: 80,
             frameHeight: 80,
           });
-        this.load.spritesheet('trash','littered_dungeon.png', {
+        /*this.load.spritesheet('trash','littered_dungeon.png', {
             frameWidth: 32,
             frameHeight: 32,
-        });
+        });*/
+        this.load.image('can','can.png');
+
         this.load.image('pixel','pixel.png');
         this.load.image('bubble','bubble.png');
         this.load.image('machine','machine2.png');

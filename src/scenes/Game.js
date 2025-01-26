@@ -197,7 +197,7 @@ export class Game extends Scene
             active: true,            
         });
 
-        this.trash1 = this.physics.add.sprite(1200,300,'trash',10).setScale(2);
+        this.trash1 = this.physics.add.sprite(1200,300,'can').setScale(2);
         this.trash1.moving = false;
 
         this.trash1.setDepth(3);

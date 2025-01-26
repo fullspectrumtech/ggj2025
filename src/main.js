@@ -3,6 +3,8 @@ import { Game } from './scenes/Game';
 import { GameOver } from './scenes/GameOver';
 import { MainMenu } from './scenes/MainMenu';
 import { Preloader } from './scenes/Preloader';
+import { Credits } from './scenes/Credits';
+import { Controls } from './scenes/Controls';
 //import { Map } from './classes/Map';
 //import { Player } from './classes/Player';
 
@@ -33,6 +35,8 @@ const config = {
         MainMenu,
         Game,
         GameOver,
+        Controls,
+        Credits
         
     ]
 };
