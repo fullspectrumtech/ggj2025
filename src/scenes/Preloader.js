@@ -86,6 +86,8 @@ export class Preloader extends Scene
         this.load.image('light1','light1.png');
         this.load.image('light2','light2.png');
 
+        this.load.image('YellowFish','YellowFish.png');
+
         //this.load.image('tileset12345','maps/tileset12345.png');
         this.load.image('pixil-frame-0(2)','maps/pixil-frame-0(2).png');
         
@@ -94,6 +96,11 @@ export class Preloader extends Scene
         this.load.tilemapTiledJSON('lake','maps/MAP.json');
 
         this.load.audio('mainmenu','audio/diver.ogg');
+        this.load.audio('bubbles','audio/bubbles-single2.ogg');
+        this.load.audio('pop','audio/pop.ogg');
+        this.load.audio('recycle','audio/Machine002.ogg');
+        this.load.audio('paper','audio/paper.ogg');
+        this.load.audio('alarm','audio/alarm.ogg');
 
 
 

@@ -84,7 +84,7 @@ export class MainMenu extends Scene
         this.add.image(200,650,'logo').setScale(0.5);
 
         
-        this.music = this.sound.add('mainmenu', {loop: false, volume:0.5});
+        this.music = this.sound.add('mainmenu', {loop: true, volume:0.5});
         this.sound.stopAll();
         this.music.play();
     }

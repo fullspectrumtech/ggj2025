@@ -62,7 +62,14 @@ export class Game extends Scene
         this.lid = this.physics.add.image(1000,70,'pixel').setScale(9000,1).setVisible(false);
         this.lid.body.setImmovable(true);
 
+        this.side = this.physics.add.image(10656,0,'pixel').setScale(1,9000).setVisible(false);
+        this.side.body.setImmovable(true);
+
         this.treasure = this.physics.add.image(10200,9000,'treasures');
+
+        this.fish = this.physics.add.sprite(10000,3500,'YellowFish').setScale(40);         
+        this.fish.body.setImmovable(true);
+        this.fish.flipX = true;
 
         this.setCollisions();
         
@@ -88,6 +95,32 @@ export class Game extends Scene
 
         this.darkness2 = this.add.image(0 ,3000,'pixel').setTint(0x000000).setScale(11000,2000).setOrigin(0);
         this.darkness2.alpha = 0.4;
+
+        this.darkness3 = this.add.image(0 ,5000,'pixel').setTint(0x000000).setScale(11000,3000).setOrigin(0);
+        this.darkness3.alpha = 0.6;
+
+        this.darkness4 = this.add.image(0 ,8000,'pixel').setTint(0x000000).setScale(11000,4000).setOrigin(0);
+        this.darkness4.alpha = 0.8;
+
+        
+
+
+
+        this.load.audio('bubbles','audio/bubbles-single2.ogg');
+        this.load.audio('pop','audio/pop.ogg');
+        this.load.audio('recycle','audio/Machine002.ogg');
+        this.load.audio('paper','audio/paper.ogg');
+        this.load.audio('alarm','audio/alarm.ogg');
+
+        this.bubbless = this.sound.add('bubbles', {loop: false, volume:1});
+        this.pop = this.sound.add('pop', {loop: false, volume:1});
+        this.recycle = this.sound.add('recycle', {loop: false, volume:1});
+        this.paper = this.sound.add('paper', {loop: false, volume:1});
+        this.alarm = this.sound.add('alarm', {loop: true, volume:1});
+        this.alarming = false;
+        //this.music.play();
+        //this.sound.stopAll();
+        
     }
 
     makeUI() {
@@ -229,6 +262,18 @@ export class Game extends Scene
             loop: false
 
         });
+
+        if(this.air/this.airMax < 0.25) {
+            if(this.alarming == false) {
+                this.alarming = true;
+                this.alarm.play();
+            }
+        } else {
+            if(this.alarming) {
+                this.alarm.stop();
+                this.alarming = false;
+            }
+        }
     }
 
     makeTrash() {
@@ -236,6 +281,10 @@ export class Game extends Scene
             classType: Phaser.GameObjects.Sprite,
             active: true,            
         });
+
+        this.trashes = [
+            {x: 1200, y:300, ref: 'can', scale:2}
+        ];
 
         this.trash1 = this.physics.add.sprite(1200,300,'can').setScale(2);
         this.trash1.moving = false;
@@ -287,6 +336,8 @@ export class Game extends Scene
     setCollisions() {
         this.physics.add.collider(this.player, this.map.collisionLayer, this.freeze, null, this);
         this.physics.add.collider(this.player, this.lid, this.freeze, null, this);
+        this.physics.add.collider(this.player, this.side, this.freeze, null, this);
+        this.physics.add.collider(this.player, this.fish, this.freeze, null, this);
         this.physics.add.collider(this.player, this.machine, this.showStore, null, this);
         this.physics.add.collider(this.player, this.treasure, this.youWin, null, this);
     }
@@ -316,6 +367,19 @@ export class Game extends Scene
         this.selected.destroy();
         this.selected = {};
 
+        this.recycle.play();
+        this.paper.play();
+
+        this.time.addEvent({
+            delay: 2500,
+            callback: ()=>{                        
+                this.recycle.stop();
+            },
+            loop: false
+
+        });
+
+
     }
 
     setSeek() {
@@ -342,6 +406,8 @@ export class Game extends Scene
                     this.metal -= item.metal;
                     this.glass -= item.glass;
                     this.plastic -= item.plastic;
+
+                    
 
                     this.updateStore();
 
@@ -371,6 +437,9 @@ export class Game extends Scene
             //console.log(this.selected);
             if(this.selected.x > 0 && this.cleaning == false && this.trashWiggle) {
                 //console.log('building big bubble');
+
+                //this.music = this.sound.add('pop', {loop: false, volume:0.5});
+                this.bubbless.play();
                 
                 this.cleaning = true;
                 this.bb.x = this.player.x;
@@ -384,7 +453,7 @@ export class Game extends Scene
                 //console.log('empty');
             
                 //console.log(this.selected);
-            
+                this.pop.play();
                 
 
                 if(this.player.frame.texture.key == 'swimmer') {
@@ -559,7 +628,7 @@ export class Game extends Scene
         }
         if(this.air < 1) {
             //this.events.off();
-            this.scene.start('GameOver');
+            //this.scene.start('GameOver');
         }
 
         /*if(this.bbc.length == 2 && this.bbc.y < 100) {
