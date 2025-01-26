@@ -34,13 +34,21 @@ export class Preloader extends Scene
         this.load.setPath('assets');
 
         this.load.image('logo', 'logo.png');
-        this.load.spritesheet('swimmer','player-idle.png', {
+        /*this.load.spritesheet('swimmer','player-idle.png', {
             frameWidth: 80,
             frameHeight: 80,
           });
         this.load.spritesheet('swimmer2','player-idle2.png', {
             frameWidth: 80,
             frameHeight: 80,
+          });*/
+        this.load.spritesheet('swimmer','image0.png', {
+            frameWidth: 100,
+            frameHeight: 100,
+          });
+        this.load.spritesheet('swimmer2','image1.png', {
+            frameWidth: 100,
+            frameHeight: 100,
           });
         /*this.load.spritesheet('trash','littered_dungeon.png', {
             frameWidth: 32,
@@ -54,6 +62,16 @@ export class Preloader extends Scene
         this.load.image('bottle','bottle.png');
         this.load.image('jars','jars.png');
         this.load.image('lamp','lamp.png');
+
+        this.load.image('coral','Gemini_Generated_Image_e2dknae2dknae2dk.jpg');
+
+        
+
+        this.load.image('piano','piano.png');
+        this.load.image('metal2','metal2.png');
+        this.load.image('plastic2','plastic2.png');
+        this.load.image('treasures','treasures.png');
+        this.load.image('tv','tv.png');
 
         this.load.image('metal','metal.png');
         this.load.image('glass','glass.png');
@@ -75,6 +93,9 @@ export class Preloader extends Scene
         //this.load.tilemapTiledJSON('lake','maps/boooooooooooooooooring.json');
         this.load.tilemapTiledJSON('lake','maps/MAP.json');
 
+        this.load.audio('mainmenu','audio/diver.ogg');
+
+
 
     }
 
@@ -93,10 +114,10 @@ export class Preloader extends Scene
         //  When all the assets have loaded, it's often worth creating global objects here that the rest of the game can use.
         //  For example, you can define global animations here, so we can use them in other scenes.
 
-        this.universal_animation('left','swimmer2',0,5,10);
-        this.universal_animation('up','swimmer2',0,5,10);
-        this.universal_animation('right','swimmer',0,5,10);
-        this.universal_animation('down','swimmer',0,5,10);
+        this.universal_animation('left','swimmer2',0,7,10);
+        this.universal_animation('up','swimmer2',0,7,10);
+        this.universal_animation('right','swimmer',0,7,10);
+        this.universal_animation('down','swimmer',0,7,10);
 
 
 

@@ -5,6 +5,7 @@ import { MainMenu } from './scenes/MainMenu';
 import { Preloader } from './scenes/Preloader';
 import { Credits } from './scenes/Credits';
 import { Controls } from './scenes/Controls';
+import { YouWin } from './scenes/YouWin';
 //import { Map } from './classes/Map';
 //import { Player } from './classes/Player';
 
@@ -36,7 +37,8 @@ const config = {
         Game,
         GameOver,
         Controls,
-        Credits
+        Credits,
+        YouWin
         
     ]
 };

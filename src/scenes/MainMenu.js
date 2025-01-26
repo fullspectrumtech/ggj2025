@@ -10,6 +10,7 @@ export class MainMenu extends Scene
     create ()
     {
         //this.add.image(512, 384, 'background');
+        this.add.image(0,0,'coral').setOrigin(0).setScale(.6);
 
         //this.add.image(512, 300, 'logo');
 
@@ -39,7 +40,7 @@ export class MainMenu extends Scene
             align: 'center'
         }).setOrigin(0);
 
-        this.add.text(600, 600, '(Move with Down key, press Space to select)', {
+        this.add.text(600, 650, '(Move with Down key, press Space to select)', {
             fontFamily: 'Arial Black', fontSize: 18, color: '#ffffff',
             stroke: '#000000', strokeThickness: 8,
             align: 'center'
@@ -81,6 +82,11 @@ export class MainMenu extends Scene
         }).setOrigin(0);
 
         this.add.image(200,650,'logo').setScale(0.5);
+
+        
+        this.music = this.sound.add('mainmenu', {loop: false, volume:0.5});
+        this.sound.stopAll();
+        this.music.play();
     }
 
     down() {

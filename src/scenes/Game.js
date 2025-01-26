@@ -62,6 +62,8 @@ export class Game extends Scene
         this.lid = this.physics.add.image(1000,70,'pixel').setScale(9000,1).setVisible(false);
         this.lid.body.setImmovable(true);
 
+        this.treasure = this.physics.add.image(10200,9000,'treasures');
+
         this.setCollisions();
         
         //this.bbc.add(this.bb);
@@ -79,10 +81,12 @@ export class Game extends Scene
 
         this.storeMove = true;
 
+        
+
         this.darkness = this.add.image(0,1000,'pixel').setTint(0x000000).setScale(11000,2000).setOrigin(0);
         this.darkness.alpha = 0.2;
 
-        this.darkness2 = this.add.image(0,3000,'pixel').setTint(0x000000).setScale(11000,2000).setOrigin(0);
+        this.darkness2 = this.add.image(0 ,3000,'pixel').setTint(0x000000).setScale(11000,2000).setOrigin(0);
         this.darkness2.alpha = 0.4;
     }
 
@@ -115,29 +119,37 @@ export class Game extends Scene
     makeStore() {
         this.storeC = this.add.container(1000,100).setDepth(4);
 
-        this.storeback = this.add.image(0,0,'pixel').setScale(600,400).setOrigin(0);
+        this.storeback = this.add.image(0,0,'pixel').setScale(600,450).setOrigin(0);
         this.storeC.add(this.storeback);
         this.storeC.setVisible(false);
 
         this.storeIndex = 0;
         this.storeOptions = [
-            {name: "Increased air tank capacity", metal: 4, glass:0, plastic:1, image:'tank', purchased: 0},
+            {name: "Double tank (+air)", metal: 4, glass:0, plastic:1, image:'tank', purchased: 0},
             {name: "Fins (+speed)", metal: 0, glass:0, plastic:3, image:'fins', purchased: 0},
+            {name: "Triple tank (+air)", metal: 8, glass:1, plastic:2, image:'tank2', purchased: 0},
+            {name: "Turbine (+speed)", metal: 4, glass:0, plastic:4, image:'fins2', purchased: 0},
         ];
 
         this.storeSelector = this.add.image(45,45,'pixel').setScale(560,60).setTint(0xff0000).setOrigin(0).setDepth(1);
         this.storeC.add(this.storeSelector);
 
+        this.header = this.add.text(0,0,'PURCHASE UPGRADES:',{fontSize: '20px', color: '#000', fontFace:"Comic Sans", fontStyle:"bold" }).setOrigin(0).setDepth(2);
+        this.storeC.add(this.header);
+        
         for (let i=0; i<this.storeOptions.length;i++){
-            this.back = this.add.image(50,50+i*100,'pixel').setScale(550,50).setTint(0x0000ff).setOrigin(0).setDepth(2);
-            this.words = this.add.text(50,50+i*100,this.storeOptions[i].name,{fontSize: '20px', color: '#777', fontFace:"Comic Sans", fontStyle:"bold" }).setOrigin(0).setDepth(2);
+            let status = 'Available';
+            if(this.storeOptions[i].purchased == 1)
+                status = 'SOLD OUT';
+            this.back = this.add.image(50,50+i*75,'pixel').setScale(550,50).setTint(0x0000ff).setOrigin(0).setDepth(2);
+            this.words = this.add.text(50,50+i*75,this.storeOptions[i].name + ": " + status + "\n M:"+this.storeOptions[i].metal+",P:"+this.storeOptions[i].plastic+",G:"+this.storeOptions[i].glass,{fontSize: '20px', color: '#fff', fontFace:"Comic Sans", fontStyle:"bold" }).setOrigin(0).setDepth(2);
 
             this.storeC.add(this.back);
             this.storeC.add(this.words);
         }
 
-        this.back = this.add.image(50,50+this.storeOptions.length*100,'pixel').setScale(550,50).setTint(0x0000ff).setOrigin(0).setDepth(2);
-        this.words = this.add.text(50,50+this.storeOptions.length*100,'EXIT',{fontSize: '20px', color: '#777', fontFace:"Comic Sans", fontStyle:"bold" }).setOrigin(0).setDepth(2);
+        this.back = this.add.image(50,50+this.storeOptions.length*75,'pixel').setScale(550,50).setTint(0x0000ff).setOrigin(0).setDepth(2);
+        this.words = this.add.text(50,50+this.storeOptions.length*75,'EXIT',{fontSize: '20px', color: '#fff', fontFace:"Comic Sans", fontStyle:"bold" }).setOrigin(0).setDepth(2);
 
         this.storeC.add(this.back);
         this.storeC.add(this.words);
@@ -146,10 +158,38 @@ export class Game extends Scene
     }
 
     showStore() {
-        this.storeIndex = 0;
+        this.storeIndex = 0;        
 
         this.storeC.setVisible(true);
+
+        //console.log(this.storeC.getAt(2));
+        //this.storeC.getAt(2).text = 'test';
+        this.updateStore();
+
         this.store = true;
+    }
+
+    updateStore() {
+        let status = 'Available';
+
+        if(this.storeOptions[0].purchased == 1)
+            status = 'SOLD OUT';
+        this.storeC.getAt(4).text = this.storeOptions[0].name + ": " + status + "\n M:"+this.storeOptions[0].metal+",P:"+this.storeOptions[0].plastic+",G:"+this.storeOptions[0].glass;
+        
+        status = 'Available';
+        if(this.storeOptions[1].purchased == 1)
+            status = 'SOLD OUT';
+        this.storeC.getAt(6).text = this.storeOptions[1].name + ": " + status + "\n M:"+this.storeOptions[1].metal+",P:"+this.storeOptions[1].plastic+",G:"+this.storeOptions[1].glass;
+
+        status = 'Available';
+        if(this.storeOptions[2].purchased == 1)
+            status = 'SOLD OUT';
+        this.storeC.getAt(8).text = this.storeOptions[2].name + ": " + status + "\n M:"+this.storeOptions[2].metal+",P:"+this.storeOptions[2].plastic+",G:"+this.storeOptions[2].glass;
+
+        status = 'Available';
+        if(this.storeOptions[3].purchased == 1)
+            status = 'SOLD OUT';
+        this.storeC.getAt(10).text = this.storeOptions[3].name + ": " + status + "\n M:"+this.storeOptions[3].metal+",P:"+this.storeOptions[3].plastic+",G:"+this.storeOptions[3].glass;
     }
 
     hideStore() {
@@ -248,6 +288,11 @@ export class Game extends Scene
         this.physics.add.collider(this.player, this.map.collisionLayer, this.freeze, null, this);
         this.physics.add.collider(this.player, this.lid, this.freeze, null, this);
         this.physics.add.collider(this.player, this.machine, this.showStore, null, this);
+        this.physics.add.collider(this.player, this.treasure, this.youWin, null, this);
+    }
+
+    youWin() {
+        this.scene.start('YouWin');
     }
 
     cashin() {
@@ -292,21 +337,29 @@ export class Game extends Scene
                 // Purchase?
                 let item = this.storeOptions[this.storeIndex];
                 if(item.purchased == 0 && item.metal<=this.metal && item.glass <= this.glass && item.plastic <= this.plastic) {
-                    console.log('ok!');
+                    //console.log('ok!');
                     item.purchased = 1;
                     this.metal -= item.metal;
                     this.glass -= item.glass;
                     this.plastic -= item.plastic;
 
+                    this.updateStore();
+
                     if(this.storeIndex == 0) {
-                        this.airMax = 200;
+                        this.airMax += 100;
                     }
                     else if(this.storeIndex == 1) {
-                        this.player.velocity = 500;
+                        this.player.velocity += 100;
+                    }
+                    else if(this.storeIndex == 2) {
+                        this.airMax += 100;
+                    }
+                    else if(this.storeIndex == 3) {
+                        this.player.velocity += 100;
                     }
                 }
                 else {
-                    console.log('no sale');
+                    //console.log('no sale');
                 }
             }
         }
@@ -317,7 +370,7 @@ export class Game extends Scene
 
             //console.log(this.selected);
             if(this.selected.x > 0 && this.cleaning == false && this.trashWiggle) {
-                console.log('building big bubble');
+                //console.log('building big bubble');
                 
                 this.cleaning = true;
                 this.bb.x = this.player.x;
@@ -385,7 +438,7 @@ export class Game extends Scene
     freeze2() {
         this.bb.body.setVelocity(0);
         this.player.body.setVelocity(0);
-        console.log('freeze2');
+        //console.log('freeze2');
     }
 
     universal_tween(targets, x, y, duration, repeat, yoyo, onComplete) {
@@ -404,7 +457,7 @@ export class Game extends Scene
 
     breathe(targets) {
 
-        console.log(targets.moving);
+        //console.log(targets.moving);
 
         if(this.trashWiggle == false) {
 
@@ -448,6 +501,8 @@ export class Game extends Scene
 
     update() {
 
+        console.log(this.player.x+" "+this.player.y);
+
         if(this.store) {
 
             if(this.storeMove) {
@@ -470,7 +525,7 @@ export class Game extends Scene
                     this.storeIndex--;
                     if(this.storeIndex == -1) this.storeIndex = this.storeOptions.length;
                 }
-                this.storeSelector.y = 45 + (100*this.storeIndex);
+                this.storeSelector.y = 45 + (75*this.storeIndex);
             }
         }
         else {
